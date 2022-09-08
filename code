@@ -1,0 +1,81 @@
+import os
+from Bio import SeqIO
+
+# to calculate the longest and shortest sequence length
+fastq_directory = "BTEC_Water"
+for filename in sorted (os.listdir(fastq_directory)):
+    fastq_file = os.path.join(fastq_directory, filename)
+    if 'fastq' in fastq_file: # to exclude non-fastq file, eg checkpoint file
+        continue
+    parser = SeqIO.parse(fastq_file, "fastq")
+
+
+    longest_sequence_length = 0
+    longest_sequence_id = ""
+
+    shortest_sequence_length = 1e6
+    shortest_sequence_id = ""
+
+    worst_quality = 1e6
+    worst_quality_id = ""
+    best_quality = 0
+    best_quality_id = ""
+
+    for seq in parser:
+        sequence_length = len(seq.seq)
+        if sequence_length > longest_sequence_length:
+            longest_sequence_length = sequence_length
+            longest_sequence_id = seq.id
+
+        if sequence_length < shortest_sequence_length:
+            shortest_sequence_length = sequence_length
+            shortest_sequence_id = seq.id
+
+    print(f"{fastq_file}\t{longest_sequence_id}\t{longest_sequence_length}\t{shortest_sequence_id}\t{shortest_sequence_length}")
+
+    #to calculate the total number of sequences in each file
+    fastq_directory = "BTEC_Water"
+for filename in sorted (os.listdir(fastq_directory)):
+    fastq_file = os.path.join(fastq_directory, filename)
+    parser = SeqIO.parse(fastq_file, "fastq")
+    n = 0
+    for seq in parser:
+        n += 1
+    print (n)
+
+    #to calculate the average length of sequence
+    fastq_directory = "BTEC_Water" 
+for filename in sorted (os.listdir(fastq_directory)):
+    fastq_file = os.path.join(fastq_directory, filename)
+    parser = SeqIO.parse(fastq_file, "fastq")
+
+    n = 0
+    total_sequence_length = 0
+    for seq in parser:
+        n += 1
+
+        sequence_length = len(seq.seq)
+        total_sequence_length += sequence_length
+
+    ave_sequence = total_sequence_length/n
+    print (ave_sequence)
+
+    # to calculate the high/low/average quality 
+    fastq_directory = "BTEC_Water"
+for filename in sorted (os.listdir(fastq_directory)):
+    fastq_file = os.path.join(fastq_directory, filename)
+    parser = SeqIO.parse(fastq_file, "fastq")
+    total_av_qual = 0
+    lowest = 1e6
+    highest = 0
+    num_qual = 0
+    for seq in parser:
+        sequence_length = len(seq.seq)
+        av_qual = sum(seq.letter_annotations['phred_quality'])/sequence_length
+        total_av_qual += av_qual
+        if av_qual < lowest:
+            lowest = av_qual
+        if av_qual > highest:
+            highest = av_qual
+        num_qual += 1
+    print(f"{fastq_file}: Lowest qual {lowest} highest qual: {highest} Av qual: {total_av_qual/num_qual}")
